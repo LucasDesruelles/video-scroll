@@ -1,65 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vidéo au Scroll</title>
-    <style>
-body {
-    margin: 0;
-    height: 300vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: black;
-    scroll-behavior: smooth; /* ← Ajout ici */
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scroll Vidéo</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      height: 1000vh; /* 10 secondes x 100vh */
+      scroll-behavior: smooth;
+    }
 
-        video {
-            width: 100%;
-            max-width: 100vw;
-            height: auto;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+    #video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
 </head>
 <body>
 
-    <video id="scroll-video" src="video.mp4" playsinline muted></video>
+  <div id="video-container">
+    <video id="scroll-video" preload="auto" muted>
+      <source src="Comp-1.mp4" type="video/mp4">
+      Votre navigateur ne prend pas en charge la lecture vidéo.
+    </video>
+  </div>
 
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const video = document.getElementById("scroll-video");
-        let scrollPercentage = 0;
-        let targetTime = 0;
+      const video = document.getElementById("scroll-video");
 
-        video.onloadedmetadata = function () {
-            const totalPageHeight = document.documentElement.scrollHeight - window.innerHeight;
+      let scrollPercentage = 0;
+      let targetTime = 0;
 
-            // Suivi du scroll
-            window.addEventListener("scroll", function () {
-                scrollPercentage = window.scrollY / totalPageHeight;
-                targetTime = scrollPercentage * video.duration;
-            });
+      video.addEventListener("loadedmetadata", () => {
+        const totalPageHeight = document.documentElement.scrollHeight - window.innerHeight;
 
-            // Boucle de mise à jour fluide
-            function smoothScrollUpdate() {
-                if (!isNaN(video.duration)) {
-                    const currentTime = video.currentTime;
-                    const diff = targetTime - currentTime;
-                    video.currentTime += diff * 0.1; // ← effet "smooth"
-                }
-                requestAnimationFrame(smoothScrollUpdate);
-            }
+        window.addEventListener("scroll", () => {
+          scrollPercentage = window.scrollY / totalPageHeight;
+          targetTime = scrollPercentage * video.duration;
+        });
 
-            smoothScrollUpdate();
-        };
+        function smoothScrollUpdate() {
+          if (!isNaN(video.duration)) {
+            const currentTime = video.currentTime;
+            const diff = targetTime - currentTime;
+            video.currentTime += diff * 0.05; // Plus petit = plus fluide
+          }
+          requestAnimationFrame(smoothScrollUpdate);
+        }
+
+        smoothScrollUpdate();
+      });
     });
-</script>
-
+  </script>
 
 </body>
 </html>
