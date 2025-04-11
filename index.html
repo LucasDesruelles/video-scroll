@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vidéo au Scroll</title>
     <style>
-        body {
-            margin: 0;
-            height: 200vh; /* Permet d'avoir une page assez longue pour scroller */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: black;
-        }
+body {
+    margin: 0;
+    height: 200vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    scroll-behavior: smooth; /* ← Ajout ici */
+}
 
         video {
             width: 100%;
@@ -29,22 +30,36 @@
 
     <video id="scroll-video" src="video.mp4" playsinline muted></video>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const video = document.getElementById("scroll-video");
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const video = document.getElementById("scroll-video");
+        let scrollPercentage = 0;
+        let targetTime = 0;
 
-            // Vérifie que la vidéo est bien chargée avant de manipuler son temps
-            video.onloadedmetadata = function () {
-                const totalPageHeight = document.documentElement.scrollHeight - window.innerHeight;
+        video.onloadedmetadata = function () {
+            const totalPageHeight = document.documentElement.scrollHeight - window.innerHeight;
 
-                window.addEventListener("scroll", function () {
-                    const scrollPercentage = window.scrollY / totalPageHeight;
-                    const videoTime = scrollPercentage * video.duration;
-                    video.currentTime = videoTime;
-                });
-            };
-        });
-    </script>
+            // Suivi du scroll
+            window.addEventListener("scroll", function () {
+                scrollPercentage = window.scrollY / totalPageHeight;
+                targetTime = scrollPercentage * video.duration;
+            });
+
+            // Boucle de mise à jour fluide
+            function smoothScrollUpdate() {
+                if (!isNaN(video.duration)) {
+                    const currentTime = video.currentTime;
+                    const diff = targetTime - currentTime;
+                    video.currentTime += diff * 0.1; // ← effet "smooth"
+                }
+                requestAnimationFrame(smoothScrollUpdate);
+            }
+
+            smoothScrollUpdate();
+        };
+    });
+</script>
+
 
 </body>
 </html>
