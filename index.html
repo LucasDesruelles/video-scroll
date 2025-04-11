@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Scroll Vidéo</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      min-height: 1000vh; /* Assurer une hauteur suffisante pour scroll */
       background-color: black;
-      height: 1000vh; /* 10 secondes x 100vh */
       scroll-behavior: smooth;
     }
 
@@ -46,9 +48,9 @@
       let targetTime = 0;
 
       video.addEventListener("loadedmetadata", () => {
-        const totalPageHeight = document.documentElement.scrollHeight - window.innerHeight;
-
+        // Calcule la hauteur totale à chaque scroll
         window.addEventListener("scroll", () => {
+          const totalPageHeight = document.documentElement.scrollHeight - window.innerHeight;
           scrollPercentage = window.scrollY / totalPageHeight;
           targetTime = scrollPercentage * video.duration;
         });
@@ -57,7 +59,7 @@
           if (!isNaN(video.duration)) {
             const currentTime = video.currentTime;
             const diff = targetTime - currentTime;
-            video.currentTime += diff * 0.05; // Plus petit = plus fluide
+            video.currentTime += diff * 0.05; // Ajuste la fluidité
           }
           requestAnimationFrame(smoothScrollUpdate);
         }
